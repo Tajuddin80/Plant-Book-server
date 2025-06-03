@@ -23,9 +23,13 @@ async function run() {
     await client.connect();
 
     const db = client.db("plantBook");
+
+    // all collections
     const gardenersCollection = db.collection("featuredGardeners");
     const tipsCollection = db.collection("allTips");
+    const usersCollection = db.collection("allUsers");
 
+    // get full gardeners list
     app.get("/gardeners", async (req, res) => {
       const activeGardeners = await gardenersCollection
         .find({ active: true })
@@ -34,6 +38,19 @@ async function run() {
       res.send(activeGardeners);
     });
 
+  // app.get("/recenttips", async (req, res) => {
+  //     const recentTips = await tipsCollection
+  //       .find()
+  //       .limit(6)
+  //       .toArray();
+  //     res.send(recentTips);
+  //   });
+      app.get("/recenttips", async (req, res) => {
+      const result = await tipsCollection.find({ availability: "Public" }).limit(6).toArray();
+      res.send(result);
+    });
+
+    // get specific gardeners profile by id
     app.get("/gardeners/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
@@ -41,6 +58,7 @@ async function run() {
       res.send(result);
     });
 
+    // get specific plant details by id
     app.get("/plantdetails/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
@@ -48,17 +66,21 @@ async function run() {
       res.send(result);
     });
 
+    // add new tips
     app.post("/addnewtip", async (req, res) => {
       const newTip = req.body;
       const result = await tipsCollection.insertOne(newTip);
       res.send(result);
     });
 
+    // get all tips
     app.get("/alltips", async (req, res) => {
       const query = { availability: "Public" };
       const result = await tipsCollection.find(query).toArray();
       res.send(result);
     });
+
+    // add user to database
 
     console.log(
       "Pinged your deployment. You successfully connected to MongoDB! ok"
