@@ -50,49 +50,6 @@ async function run() {
 });
 
 
-// app.put("/alltips/:id/like", async (req, res) => {
-//   const id = req.params.id;
-//   const { userEmail } = req.body;
-
-//   const tip = await tipsCollection.findOne({ _id: new ObjectId(id) });
-
-//   if (!tip) return res.status(404).send({ error: "Tip not found" });
-
-//   const hasLiked = tip.likedBy?.includes(userEmail);
-
-//   const updateDoc = hasLiked
-//     ? {
-//         $inc: { totalLiked: -1 },
-//         $pull: { likedBy: userEmail },
-//       }
-//     : {
-//         $inc: { totalLiked: 1 },
-//         $addToSet: { likedBy: userEmail },
-//       };
-
-//   const result = await tipsCollection.updateOne(
-//     { _id: new ObjectId(id) },
-//     updateDoc
-//   );
-
-//   res.send(result);
-// });
-
-app.put("/alltips/:id/like", async (req, res) => {
-  const id = req.params.id;
-  const { userEmail } = req.body;
-
-  const result = await tipsCollection.updateOne(
-    { _id: new ObjectId(id), likedBy: { $ne: userEmail } },
-    {
-      $addToSet: { likedBy: userEmail },
-      $inc: { totalLiked: 1 },
-    }
-  );
-
-  res.send(result);
-});
-
 
 
 app.put("/alltips/:id/like", async (req, res) => {
@@ -106,7 +63,6 @@ app.put("/alltips/:id/like", async (req, res) => {
       $inc: { totalLiked: 1 },
     }
   );
-
   res.send(result);
 });
 
