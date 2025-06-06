@@ -38,15 +38,12 @@ async function run() {
       res.send(activeGardeners);
     });
 
-  // app.get("/recenttips", async (req, res) => {
-  //     const recentTips = await tipsCollection
-  //       .find()
-  //       .limit(6)
-  //       .toArray();
-  //     res.send(recentTips);
-  //   });
-      app.get("/recenttips", async (req, res) => {
-      const result = await tipsCollection.find({ availability: "Public" }).limit(6).toArray();
+    // get recent tips
+    app.get("/recenttips", async (req, res) => {
+      const result = await tipsCollection
+        .find({ availability: "Public" })
+        .limit(6)
+        .toArray();
       res.send(result);
     });
 
@@ -80,7 +77,24 @@ async function run() {
       res.send(result);
     });
 
+
+//  app.get("/mytips", async (req, res) => {
+//   const myEmail = req.params.email;
+//   const query = { email: myEmail };
+//   const result = await tipsCollection.find(query).toArray();
+//   res.send(result);
+// });
+
+
     // add user to database
+
+app.post('/adduser', async(req, res)=>{
+  const newUser = req.body;
+  const result = await usersCollection.insertOne(newUser);
+  res.send(result)
+})
+
+
 
     console.log(
       "Pinged your deployment. You successfully connected to MongoDB! ok"
