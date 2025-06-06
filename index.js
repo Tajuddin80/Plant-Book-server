@@ -77,24 +77,58 @@ async function run() {
       res.send(result);
     });
 
+    app.get("/alltips/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
 
-//  app.get("/mytips", async (req, res) => {
-//   const myEmail = req.params.email;
-//   const query = { email: myEmail };
-//   const result = await tipsCollection.find(query).toArray();
-//   res.send(result);
-// });
+      const result = await tipsCollection.findOne(filter);
+      res.send(result);
+    });
 
+    // tips with myEmail
+    app.get("/mytips/:email", async (req, res) => {
+      const myEmail = req.params.email;
+      const query = { userEmail: myEmail };
+      const result = await tipsCollection.find(query).toArray();
+      res.send(result);
+    });
+
+
+
+
+    app.get("/initialize-totalLiked", async (req, res) => {
+  const result = await tipsCollection.updateMany({}, {
+    $set: { totalLiked: 0 }
+  });
+  res.send(result);
+});
+
+    // delete a tip from db
+
+    app.delete("/alltips/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await tipsCollection.deleteOne(query);
+      res.send(result);
+    });
+
+    app.put("/alltips/:id", async (req, res) => {
+      const id = req.params.id; // Extract ID from route
+      const updatedTip = req.body; // Get updated data from request body
+      const filter = { _id: new ObjectId(id) }; // Convert string ID to MongoDB ObjectId
+      const updateDoc = {
+        $set: updatedTip, // Define the fields to update
+      };
+      const result = await tipsCollection.updateOne(filter, updateDoc);
+      res.send(result); // Send the result back to client
+    });
 
     // add user to database
-
-app.post('/adduser', async(req, res)=>{
-  const newUser = req.body;
-  const result = await usersCollection.insertOne(newUser);
-  res.send(result)
-})
-
-
+    app.post("/adduser", async (req, res) => {
+      const newUser = req.body;
+      const result = await usersCollection.insertOne(newUser);
+      res.send(result);
+    });
 
     console.log(
       "Pinged your deployment. You successfully connected to MongoDB! ok"
