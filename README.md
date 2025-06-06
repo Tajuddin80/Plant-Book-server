@@ -4,6 +4,11 @@ This is the backend server for **PlantBook**, a Gardening Community & Resource H
 
 ---
 
+
+## Live Url: 
+https://plant-book-f2ba2.web.app/
+
+
 ## Features
 
 - RESTful CRUD APIs for:

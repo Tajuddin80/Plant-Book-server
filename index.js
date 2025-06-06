@@ -1,8 +1,8 @@
+require("dotenv").config();
 const express = require("express");
 const app = express();
 const cors = require("cors");
 const port = process.env.PORT || 3000;
-require("dotenv").config();
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 
 app.use(cors());
@@ -20,7 +20,7 @@ const client = new MongoClient(process.env.MONGODB_URI, {
 });
 async function run() {
   try {
-    await client.connect();
+    // await client.connect();
 
     const db = client.db("plantBook");
 
