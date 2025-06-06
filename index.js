@@ -39,13 +39,77 @@ async function run() {
     });
 
     // get recent tips
-    app.get("/recenttips", async (req, res) => {
-      const result = await tipsCollection
-        .find({ availability: "Public" })
-        .limit(6)
-        .toArray();
-      res.send(result);
-    });
+ app.get("/recenttips", async (req, res) => {
+  const result = await tipsCollection
+    .find({ availability: "Public" })
+    .sort({ totalLiked: -1 }) 
+    .limit(6)
+    .toArray();
+
+  res.send(result);
+});
+
+
+// app.put("/alltips/:id/like", async (req, res) => {
+//   const id = req.params.id;
+//   const { userEmail } = req.body;
+
+//   const tip = await tipsCollection.findOne({ _id: new ObjectId(id) });
+
+//   if (!tip) return res.status(404).send({ error: "Tip not found" });
+
+//   const hasLiked = tip.likedBy?.includes(userEmail);
+
+//   const updateDoc = hasLiked
+//     ? {
+//         $inc: { totalLiked: -1 },
+//         $pull: { likedBy: userEmail },
+//       }
+//     : {
+//         $inc: { totalLiked: 1 },
+//         $addToSet: { likedBy: userEmail },
+//       };
+
+//   const result = await tipsCollection.updateOne(
+//     { _id: new ObjectId(id) },
+//     updateDoc
+//   );
+
+//   res.send(result);
+// });
+
+app.put("/alltips/:id/like", async (req, res) => {
+  const id = req.params.id;
+  const { userEmail } = req.body;
+
+  const result = await tipsCollection.updateOne(
+    { _id: new ObjectId(id), likedBy: { $ne: userEmail } },
+    {
+      $addToSet: { likedBy: userEmail },
+      $inc: { totalLiked: 1 },
+    }
+  );
+
+  res.send(result);
+});
+
+
+
+app.put("/alltips/:id/like", async (req, res) => {
+  const id = req.params.id;
+  const { userEmail } = req.body;
+
+  const result = await tipsCollection.updateOne(
+    { _id: new ObjectId(id), likedBy: { $ne: userEmail } },
+    {
+      $addToSet: { likedBy: userEmail },
+      $inc: { totalLiked: 1 },
+    }
+  );
+
+  res.send(result);
+});
+
 
     // get specific gardeners profile by id
     app.get("/gardeners/:id", async (req, res) => {
@@ -94,6 +158,15 @@ async function run() {
     });
 
 
+app.put("/alltips/:id/like", async (req, res) => {
+  const id = req.params.id;
+  const filter = { _id: new ObjectId(id) };
+  const updateDoc = {
+    $inc: { totalLiked: 1 }
+  };
+  const result = await tipsCollection.updateOne(filter, updateDoc);
+  res.send(result);
+});
 
 
     app.get("/initialize-totalLiked", async (req, res) => {
